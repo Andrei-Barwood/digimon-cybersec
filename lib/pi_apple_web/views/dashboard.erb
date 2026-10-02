@@ -29,7 +29,10 @@
             </aside>
             <section class="content">
                 <div class="panel">
-                    <h2>Análisis de Vulnerabilidad</h2>
+                    <div class="console-header">
+                        <h2>Análisis de Vulnerabilidad</h2>
+                        <a id="export-pdf" href="#" class="btn" style="display:none;" target="_blank">EXPORTAR PDF</a>
+                    </div>
                     <div id="prompt-container" class="markdown-body">
                         <p>Selecciona un episodio del panel lateral para cargar el reporte.</p>
                     </div>
@@ -57,6 +60,10 @@
                 
                 currentEpisode = e.target.dataset.ep;
                 document.getElementById('run-test').disabled = false;
+                
+                const pdfBtn = document.getElementById('export-pdf');
+                pdfBtn.style.display = 'inline-block';
+                pdfBtn.href = '/pdf/' + currentEpisode;
                 
                 // Fetch prompt
                 document.getElementById('prompt-container').innerHTML = "<p>Cargando reporte...</p>";

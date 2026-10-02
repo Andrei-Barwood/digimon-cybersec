@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'kramdown'
 require 'json'
+require 'prawn'
 
 module PiAppleWeb
   class App < Sinatra::Base
@@ -18,7 +19,8 @@ module PiAppleWeb
       file = File.expand_path("../../test/episodios/ep#{ep}_test.rb", __dir__)
       
       if File.exist?(file)
-        output = `ruby #{file} 2>&1`
+        # Add -v to make minitest verbose
+        output = `ruby #{file} -v 2>&1`
         exit_code = $?.exitstatus
       else
         output = "File not found: #{file}"
@@ -42,6 +44,27 @@ module PiAppleWeb
 
       content_type :json
       { html: html }.to_json
+    end
+
+    get '/pdf/:episode' do
+      ep = params[:episode].to_s.rjust(2, '0')
+      file_path = File.expand_path("../../prompts/ep#{ep}_prompt.md", __dir__)
+      
+      if File.exist?(file_path)
+        content = File.read(file_path)
+        
+        pdf = Prawn::Document.new
+        pdf.font("Courier")
+        pdf.text "REPORTE DE INCIDENTE - EPISODIO #{ep}\n\n", size: 16, style: :bold
+        pdf.text content
+        
+        content_type 'application/pdf'
+        attachment "Reporte_Digimon_Ep#{ep}.pdf"
+        pdf.render
+      else
+        status 404
+        "Not found"
+      end
     end
   end
 end

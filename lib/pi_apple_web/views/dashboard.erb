@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pi-apple :: Digimon Cybersec Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="apple">🍎</span> 
+                <h1>Pi-apple OS v9.9 - Izzy's Terminal</h1>
+            </div>
+            <div class="status-bar">
+                <span>Conexión: <strong>ESTABLE</strong></span>
+                <span>Prodigioso! 💻</span>
+            </div>
+        </header>
+
+        <main>
+            <aside class="sidebar">
+                <h2>Episodios</h2>
+                <ul id="episode-list">
+                    <% @episodes.each do |ep| %>
+                        <li><a href="#" class="ep-link" data-ep="<%= ep %>">Episodio <%= ep %></a></li>
+                    <% end %>
+                </ul>
+            </aside>
+            <section class="content">
+                <div class="panel">
+                    <h2>Análisis de Vulnerabilidad</h2>
+                    <div id="prompt-container" class="markdown-body">
+                        <p>Selecciona un episodio del panel lateral para cargar el reporte.</p>
+                    </div>
+                </div>
+                
+                <div class="panel console-panel">
+                    <div class="console-header">
+                        <h2>Terminal de Simulador Minitest</h2>
+                        <button id="run-test" class="btn" disabled>EJECUTAR TEST</button>
+                    </div>
+                    <pre id="console-output" class="console">Esperando selección de episodio...</pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        let currentEpisode = null;
+
+        document.querySelectorAll('.ep-link').forEach(link => {
+            link.addEventListener('click', async (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.ep-link').forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                currentEpisode = e.target.dataset.ep;
+                document.getElementById('run-test').disabled = false;
+                
+                // Fetch prompt
+                document.getElementById('prompt-container').innerHTML = "<p>Cargando reporte...</p>";
+                try {
+                    const res = await fetch('/prompt/' + currentEpisode);
+                    const data = await res.json();
+                    document.getElementById('prompt-container').innerHTML = data.html;
+                } catch(e) {
+                    document.getElementById('prompt-container').innerHTML = "<p>Error de carga.</p>";
+                }
+                
+                document.getElementById('console-output').innerText = "Lista para ejecutar simulación del Ep " + currentEpisode;
+            });
+        });
+
+        document.getElementById('run-test').addEventListener('click', async () => {
+            if(!currentEpisode) return;
+            const consoleOut = document.getElementById('console-output');
+            consoleOut.innerText = "Ejecutando tests... Por favor espere.";
+            
+            try {
+                const res = await fetch('/run/' + currentEpisode, { method: 'POST' });
+                const data = await res.json();
+                consoleOut.innerText = data.output;
+                if(data.exit_code === 0) {
+                    consoleOut.classList.add('success');
+                    consoleOut.classList.remove('error');
+                } else {
+                    consoleOut.classList.add('error');
+                    consoleOut.classList.remove('success');
+                }
+            } catch (e) {
+                consoleOut.innerText = "Error ejecutando el test.";
+            }
+        });
+    </script>
+</body>
+</html>

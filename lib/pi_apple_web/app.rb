@@ -7,7 +7,7 @@ module PiAppleWeb
   class App < Sinatra::Base
     set :public_folder, File.expand_path('public', __dir__)
     set :views, File.expand_path('views', __dir__)
-    set :port, 8080
+    set :port, 9200
 
     get '/' do
       @episodes = (1..54).map { |i| i.to_s }

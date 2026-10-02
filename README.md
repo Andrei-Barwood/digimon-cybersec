@@ -10,8 +10,8 @@ Aquí no solo encontrarás teoría, sino código Ruby ejecutable con tests que "
 
 1. [Requisitos Previos](#requisitos-previos)
 2. [Estructura del Proyecto](#estructura-del-proyecto)
-3. [Tutorial: ¿Cómo usar este repositorio?](#tutorial-cómo-usar-este-repositorio)
-4. [Ejecución de Tests](#ejecución-de-tests)
+3. [Interfaz Pi-Apple (Web GUI)](#interfaz-pi-apple-web-gui)
+4. [Ejecución por Consola (CLI)](#ejecución-por-consola-cli)
 5. [Mapeo de Conceptos (Ejemplos)](#mapeo-de-conceptos-ejemplos)
 
 ---
@@ -21,64 +21,65 @@ Aquí no solo encontrarás teoría, sino código Ruby ejecutable con tests que "
 Para ejecutar los escenarios y verificar las mitigaciones, tu computadora debe tener instalado:
 
 - **Ruby** (Versión 2.7 o superior recomendada).
-- La gema estándar **Minitest** (incluida por defecto en la mayoría de las instalaciones de Ruby).
+- **Bundler** (para instalar las dependencias).
 
-Puedes verificar tu versión de Ruby abriendo tu terminal y ejecutando:
+Para instalar las dependencias necesarias del servidor web y PDF:
 ```bash
-ruby -v
+bundle install
 ```
 
 ---
 
 ## 📁 Estructura del Proyecto
 
-El proyecto está organizado cuidadosamente para separar la narrativa, la lógica de negocio y las pruebas de validación:
+El proyecto está organizado cuidadosamente para separar la narrativa, la lógica de negocio y las interfaces:
 
 ```text
 /
+├── bin/
+│   └── pi_apple               # Script ejecutable para lanzar la interfaz Web GUI.
 ├── prompts/
-│   ├── ESTADO.txt           # Rastrea el progreso y estado actual de la saga.
-│   ├── 00_SESION_MAESTRA.txt # Reglas de comportamiento del agente IA.
-│   ├── 01_PLANTILLA_EPISODIO.txt # Estructura base para crear episodios.
-│   └── ep1_prompt.md a ep54_prompt.md # Archivos Markdown con la historia y el análisis de cada episodio.
+│   └── ep01_prompt.md a ep54_prompt.md # Reportes Markdown de cada episodio.
 ├── lib/
-│   └── digi_sec/            # Código Ruby de producción (Malware, Defensas, Subredes).
-│       └── ep1_kuwagamon.rb a ep54_apocalymon.rb
+│   ├── digi_sec/              # Código Ruby de producción (Malware, Defensas, Subredes).
+│   └── pi_apple_web/          # Aplicación Sinatra (Backend) y Frontend (HTML/CSS) de la GUI.
 └── test/
-    └── episodios/           # Pruebas Minitest para validar los escenarios.
-        └── ep1_test.rb a ep54_test.rb
+    └── episodios/             # Pruebas Minitest para validar los escenarios.
+        └── ep01_test.rb a ep54_test.rb
 ```
 
 ---
 
-## 📖 Tutorial: ¿Cómo usar este repositorio?
+## 💻 Interfaz Pi-Apple (Web GUI)
 
-Imagina que eres Izzy sentado frente a su laptop Pi-apple. Tu objetivo es estudiar cómo las amenazas de la red (Digimon enemigos) comprometen los sistemas y cómo los administradores (Los Niños Elegidos) aplican parches y aislamientos (Digimon aliados).
+Hemos construido una Interfaz Gráfica (Dashboard) que simula el diseño retro y *hacker* de la laptop Pi-apple de Izzy. 
 
-### Paso 1: Leer el Caso de Estudio (El Prompt)
-Dirígete a la carpeta `/prompts/` y abre cualquier archivo Markdown (por ejemplo, `ep14_prompt.md`). Allí encontrarás 5 secciones:
-1. **Contexto del Incidente:** Breve resumen de la analogía entre el canon y la ciberseguridad.
-2. **Detección Temprana:** Explicación del fallo preventivo.
-3. **Mitigación:** La acción de respuesta a incidentes tomada por el Digimon aliado.
-4. **Análisis Forense:** Recomendaciones *Post-mortem*.
-5. **Rutas:** Ubicación de los archivos ejecutables.
+### Iniciar el servidor
+Para arrancar la interfaz web, simplemente ejecuta desde la terminal:
 
-### Paso 2: Revisar la Lógica del Ataque
-Abre el archivo Ruby correspondiente en `/lib/digi_sec/`. Verás clases que simulan el ecosistema de red. 
-Por ejemplo, verás cómo `DevimonAPT` ejecuta un ataque, y cómo `AngemonDisasterRecovery` lo mitiga aislando la amenaza o reiniciando el sistema.
+```bash
+ruby bin/pi_apple
+```
 
-### Paso 3: Ejecutar la Simulación
-¡Aquí es donde ocurre la magia! Ve a tu terminal y ejecuta las pruebas del episodio que estás estudiando. Si el ataque no tiene defensas, el sistema fallará. Si el parche se aplica correctamente, el test pasará en verde.
+El servidor local se levantará en el **puerto 9200**.
+Abre tu navegador web favorito y dirígete a:
+👉 **http://localhost:9200**
+
+### Funciones de la Interfaz:
+1. **Navegación Visual:** Selecciona cualquiera de los 54 episodios en la barra lateral.
+2. **Reportes de Vulnerabilidad:** Lee el análisis detallado del incidente traducido de Markdown a HTML.
+3. **Simulador Minitest (Terminal Integrada):** Presiona **"EJECUTAR TEST"** para correr la simulación de seguridad del episodio seleccionado en tiempo real. La terminal es verbosa, mostrándote el progreso exacto.
+4. **Exportar a PDF:** Una vez cargado un episodio, puedes hacer clic en **"EXPORTAR PDF"** para que el backend compile y descargue el reporte de ciberseguridad formateado.
 
 ---
 
-## 🚀 Ejecución de Tests
+## 🚀 Ejecución por Consola (CLI)
 
-Puedes ejecutar los tests de un episodio individual usando el comando `ruby`:
+Si prefieres auditar el sistema directamente desde la consola del sistema operativo (sin la interfaz web):
 
 ```bash
-# Ejecutar un solo episodio (Ejemplo: Episodio 1)
-ruby test/episodios/ep1_test.rb
+# Ejecutar un solo episodio con salida verbosa
+ruby test/episodios/ep01_test.rb -v
 ```
 
 Si deseas correr todos los incidentes masivamente (Auditoría completa del Mundo Digital):
@@ -86,16 +87,6 @@ Si deseas correr todos los incidentes masivamente (Auditoría completa del Mundo
 ```bash
 # En sistemas basados en Unix (Linux / macOS) con Zsh o Bash:
 for f in test/episodios/ep*_test.rb; do ruby $f; done
-```
-
-**Salida Esperada:**
-Si las defensas (Digimon aliados) funcionaron correctamente, verás mensajes como:
-```text
-Run options: --seed 12345
-# Running:
-.
-Finished in 0.0001s, 10000 runs/s, 20000 assertions/s.
-1 runs, 2 assertions, 0 failures, 0 errors, 0 skips
 ```
 
 ---

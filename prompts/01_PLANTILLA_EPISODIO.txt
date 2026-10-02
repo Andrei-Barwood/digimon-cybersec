@@ -1,0 +1,26 @@
+# PLANTILLA DE EPISODIO: [Número de Episodio] - [Nombre del Episodio]
+
+**Voz de Izzy (Koushiro):** "¡Prodigioso! Tenemos un nuevo incidente de seguridad."
+
+## 1. Contexto del Incidente (Canon vs Cybersec)
+- **Digimon Enemigo:** [Nombre del Digimon, ej. Kuwagamon]
+- **Vector de Ataque (Analogía):** [ej. Gusano de Red / Ataque DDoS de fuerza bruta]
+- **Descripción del Escenario:** [Breve resumen de cómo el episodio se traduce a un problema de ciberseguridad]
+
+## 2. Prevención y Detección Temprana (Analyzer)
+- **Superficie de Ataque:** [¿Por dónde entró la amenaza?]
+- **Mecanismos de Detección:** [Monitoreo de tráfico, alertas de SIEM, logs de eventos]
+- **Fallo Preventivo:** [¿Por qué no se detuvo antes? ej. Falta de segmentación de red]
+
+## 3. Mitigación de Daños (Evolution)
+- **Herramienta de Defensa (Digimon Aliado):** [ej. Agumon -> Greymon como un cortafuegos escalado de emergencia]
+- **Acción Tomada:** [Aislamiento de la amenaza, parcheo en caliente, bloqueo de IPs]
+
+## 4. Análisis Forense y Reporte (PDF Export)
+- **Artefactos del Malware:** [Características del atacante]
+- **Recomendaciones (Post-mortem):** [Cómo evitar que vuelva a suceder]
+
+## 5. Código Ejecutable (Prodigious Tests)
+- **Ruta del test:** `test/episodios/ep[XX]_test.rb`
+- **Ruta de la lógica:** `lib/digi_sec/ep[XX]_[nombre].rb`
+*(Debe contener tests en Minitest o RSpec que fallen si la amenaza no se mitiga, demostrando que el código tiene "bite" y es ejecutable)*

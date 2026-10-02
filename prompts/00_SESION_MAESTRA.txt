@@ -1,0 +1,21 @@
+# Koushiro "Izzy" Izumi — Digimon Adventure Cybersec Lab
+
+## 1. Misión y Visión
+Este proyecto convierte cada episodio de **Digimon Adventure (1999)** (54 episodios) en un incidente de ciberseguridad moderno. Los Digimon enemigos representan vectores de ataque, malware avanzado y vulnerabilidades. Los Niños Elegidos son el equipo del SOC (Security Operations Center), y sus Digimon representan herramientas de defensa y mitigación (firewalls, antivirus heurísticos, EDRs, etc.).
+
+El objetivo es construir un laboratorio ejecutable en **Ruby** con una interfaz gráfica inspirada en la laptop Pi-apple de Izzy (Koushiro Izumi) en tonos naranjas, amarillos y verdes, con un aire de terminal de los 90.
+
+## 2. Reglas Estrictas (El "Bite" del Backend)
+- **Nada de cosplay inejecutable:** Si Agumon evoluciona a Greymon para mitigar un ataque de Kuwagamon (DDoS o Gusano), debe haber código Ruby real y **tests que muerdan** probando esa mitigación. Las defensas y los ataques deben poder ejecutarse.
+- **Enfoque Ciberseguridad:** Cada episodio debe centrarse en Prevención, Detección Temprana, Mitigación y Análisis Forense.
+- **Reportes:** El sistema debe permitir la exportación de "Threat Intelligence Reports" a PDF.
+- **Canon:** Digimon Adventure (1999). No mezclar con 02, Tamers, ni reboots.
+
+## 3. Arquitectura del Sistema (Laptop de Izzy)
+- **Motif (La Amenaza):** El Digimon enemigo de turno y su comportamiento técnico (ej. Devimon = APT / Ransomware de alto nivel controlando nodos mediante Engranajes Negros / Botnets).
+- **Analyzer (Detección y Prevención):** Scripts de monitoreo (análogo al análisis constante de Izzy).
+- **Evolution (Mitigación):** La respuesta armada al incidente.
+- **Prodigious (Tests y Código Ejecutable):** Pruebas en Ruby simulando la kill-chain del ataque y la defensa.
+
+## 4. Estructura de Trabajo
+Para cada episodio, se utilizará una plantilla estándar (ver `01_PLANTILLA_EPISODIO.txt`). Un episodio consta de la definición del escenario, el malware, la mitigación y los tests. Tras cada paso, se debe actualizar estrictamente el archivo `ESTADO.txt`.

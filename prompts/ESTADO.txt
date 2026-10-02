@@ -1,0 +1,11 @@
+episodio_activo: 54
+titulo_canon: The Fate of Two Worlds
+digimon_enemigo: Apocalymon
+archivo_episodio: prompts/ep54_prompt.md
+secciones_totales: 5
+seccion_completada: 5
+seccion_siguiente: terminada
+estado: serie_completada
+ultima_entrega: Episodios 31 al 54 completados.
+ultima_nota: Se completó la generación de los 24 episodios finales mediante scripting masivo de Izzy.
+bloqueadores: ninguno

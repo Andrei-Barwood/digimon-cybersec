@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'kramdown'
 require 'json'
 require 'prawn'
+require_relative 'system_report_generator'
 
 module PiAppleWeb
   class App < Sinatra::Base
@@ -19,9 +20,50 @@ module PiAppleWeb
       file = File.expand_path("../../test/episodios/ep#{ep}_test.rb", __dir__)
       
       if File.exist?(file)
-        # Add -v to make minitest verbose
-        output = `ruby #{file} -v 2>&1`
+        raw_output = `ruby -I lib #{file} -v 2>&1`
         exit_code = $?.exitstatus
+
+        # Leer firma de amenaza del prompt
+        prompt_file = File.expand_path("../../prompts/ep#{ep}_prompt.md", __dir__)
+        threat_signature = "DESCONOCIDA"
+        if File.exist?(prompt_file)
+          title_line = File.readlines(prompt_file).first(10).find { |l| l.start_with?('# ') }
+          threat_signature = title_line.gsub('#', '').strip if title_line
+        end
+
+        timestamp = Time.now.strftime('%Y-%m-%d %H:%M:%S JST')
+        header = <<~TXT
+          ========================================================================
+          [PI-APPLE OS v9.9] INICIANDO PROTOCOLO DE AUDITORÍA Y MITIGACIÓN
+          ========================================================================
+          > FECHA DEL SISTEMA: #{timestamp}
+          > OPERADOR: Koushiro "Izzy" Izumi
+          > OBJETIVO DE ESCANEO: SECTOR EP#{ep} (Mundo Digital)
+          > FIRMA DE AMENAZA IDENTIFICADA: #{threat_signature}
+          > CARGANDO VECTORES DE ATAQUE... OK
+          > INICIALIZANDO MOTORES DE MITIGACIÓN (Digivice Sync)... OK
+          > ESTADO DE RED: INTERCEPTANDO TRÁFICO ANÓMALO...
+          
+          ------------------------------------------------------------------------
+          [INICIO DE VOLCADO DE LOGS DEL MOTOR DE PRUEBAS MINITEST]
+          ------------------------------------------------------------------------
+
+        TXT
+
+        footer = <<~TXT
+
+          ------------------------------------------------------------------------
+          [FIN DE VOLCADO DE LOGS]
+          ------------------------------------------------------------------------
+          > ANALIZANDO RESULTADOS DE LA MITIGACIÓN...
+          > CÓDIGO DE SALIDA DEL PROCESO: #{exit_code}
+          #{exit_code == 0 ? '> ESTADO: [ÉXITO] AMENAZA MITIGADA. LOS NODOS ESTÁN SEGUROS.' : '> ESTADO: [FALLO CRÍTICO] LA AMENAZA SIGUE ACTIVA. SE REQUIERE INTERVENCIÓN.'}
+          ========================================================================
+          [PI-APPLE OS] REPORTE DE SISTEMA FINALIZADO.
+          ========================================================================
+        TXT
+
+        output = header + raw_output + footer
       else
         output = "File not found: #{file}"
         exit_code = 1
@@ -65,6 +107,13 @@ module PiAppleWeb
         status 404
         "Not found"
       end
+    end
+
+    get '/system_report' do
+      pdf_data = PiAppleWeb::SystemReportGenerator.generate
+      content_type 'application/pdf'
+      attachment "Reporte_Sistema_Global.pdf"
+      pdf_data
     end
   end
 end

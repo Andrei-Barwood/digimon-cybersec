@@ -6,6 +6,6 @@ secciones_totales: 5
 seccion_completada: 5
 seccion_siguiente: terminada
 estado: serie_completada
-ultima_entrega: Reporte de sistema global implementado.
-ultima_nota: Se agregó un endpoint en Pi-apple web para exportar un PDF verboso del estado del sistema.
+ultima_entrega: Reportes detallados implementados (Global y Episodios).
+ultima_nota: Se añadió bin/global_test interactivo, reporte global de 3 párrafos y reportes individuales de 12 páginas.
 bloqueadores: ninguno

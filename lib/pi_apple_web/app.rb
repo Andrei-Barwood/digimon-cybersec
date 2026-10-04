@@ -3,6 +3,7 @@ require 'kramdown'
 require 'json'
 require 'prawn'
 require_relative 'system_report_generator'
+require_relative 'episode_report_generator'
 
 module PiAppleWeb
   class App < Sinatra::Base
@@ -90,23 +91,11 @@ module PiAppleWeb
 
     get '/pdf/:episode' do
       ep = params[:episode].to_s.rjust(2, '0')
-      file_path = File.expand_path("../../prompts/ep#{ep}_prompt.md", __dir__)
       
-      if File.exist?(file_path)
-        content = File.read(file_path)
-        
-        pdf = Prawn::Document.new
-        pdf.font("Courier")
-        pdf.text "REPORTE DE INCIDENTE - EPISODIO #{ep}\n\n", size: 16, style: :bold
-        pdf.text content
-        
-        content_type 'application/pdf'
-        attachment "Reporte_Digimon_Ep#{ep}.pdf"
-        pdf.render
-      else
-        status 404
-        "Not found"
-      end
+      pdf_data = PiAppleWeb::EpisodeReportGenerator.generate(ep)
+      content_type 'application/pdf'
+      attachment "Reporte_Digimon_Ep#{ep}.pdf"
+      pdf_data
     end
 
     get '/system_report' do

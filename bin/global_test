@@ -1,0 +1,76 @@
+#!/usr/bin/env ruby
+require 'io/console'
+require 'fileutils'
+
+def colorize(text, color_code)
+  "\e[#{color_code}m#{text}\e[0m"
+end
+
+def red(text); colorize(text, 31); end
+def green(text); colorize(text, 32); end
+def yellow(text); colorize(text, 33); end
+def cyan(text); colorize(text, 36); end
+
+puts green("================================================================")
+puts green("PI-APPLE OS :: TERMINAL DE AUDITORÍA GLOBAL E INTERACTIVA")
+puts green("OPERADOR: Koushiro 'Izzy' Izumi")
+puts green("================================================================")
+puts yellow("Presione ENTER para iniciar el escaneo profundo de los 54 sectores...")
+STDIN.gets
+
+total_eps = 54
+passed = 0
+failed = 0
+missing = 0
+
+(1..total_eps).each do |i|
+  ep = i.to_s.rjust(2, '0')
+  test_file = File.expand_path("../test/episodios/ep#{ep}_test.rb", __dir__)
+  prompt_file = File.expand_path("../prompts/ep#{ep}_prompt.md", __dir__)
+  
+  puts cyan("\n>>> INICIANDO ANÁLISIS DE INCIDENTE: SECTOR EP#{ep} <<<")
+  
+  threat_info = ""
+  if File.exist?(prompt_file)
+    content = File.read(prompt_file)
+    title = content.match(/# (.*)/)&.captures&.first || "DESCONOCIDO"
+    enemy = content.match(/\*\*Digimon Enemigo:\*\*\s*(.*)/)&.captures&.first || "N/A"
+    vector = content.match(/\*\*Vector de Ataque \(Analogía\):\*\*\s*(.*)/)&.captures&.first || "N/A"
+    
+    puts green("[*] Firma (Canon): #{title}")
+    puts yellow("[*] Identificador de Malware: #{enemy}")
+    puts yellow("[*] Vector de Ataque: #{vector}")
+  else
+    puts red("[!] ADVERTENCIA: No se encontró archivo de Threat Intelligence (Prompt).")
+  end
+  
+  puts cyan("[*] Ejecutando rutinas de mitigación y pruebas unitarias (Tests)...")
+  
+  if File.exist?(test_file)
+    output = `ruby -I #{File.expand_path('../lib', __dir__)} #{test_file} 2>&1`
+    if $?.success?
+      puts green("[+] RESULTADO: MITIGACIÓN EXITOSA.")
+      puts output.lines.last(3).join.strip # Show the last few lines of the test output
+      passed += 1
+    else
+      puts red("[-] RESULTADO: BRECHA DETECTADA. FALLO EN LA DEFENSA.")
+      puts red(output)
+      failed += 1
+    end
+  else
+    puts red("[-] RESULTADO: SISTEMA VULNERABLE. No se detectaron contramedidas (Test faltante).")
+    missing += 1
+  end
+  
+  puts cyan("----------------------------------------------------------------")
+  sleep 0.1 # Small delay for the "interactive" hacker feel
+end
+
+puts "\n"
+puts green("================================================================")
+puts green("REPORTE FINAL DE AUDITORÍA")
+puts green("================================================================")
+puts "Sectores Seguros: #{green(passed.to_s)}"
+puts "Brechas de Seguridad: #{red(failed.to_s)}"
+puts "Sectores Sin Defensas: #{yellow(missing.to_s)}"
+puts green("================================================================")

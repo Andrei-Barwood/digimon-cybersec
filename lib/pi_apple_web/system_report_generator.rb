@@ -29,47 +29,53 @@ module PiAppleWeb
       
       (1..total_episodes).each do |i|
         ep = i.to_s.rjust(2, '0')
-        prompt_path = File.expand_path("../../../prompts/ep#{ep}_prompt.md", __dir__)
-        test_path = File.expand_path("../../../test/episodios/ep#{ep}_test.rb", __dir__)
+        prompt_path = File.expand_path("../../prompts/ep#{ep}_prompt.md", __dir__)
+        test_path = File.expand_path("../../test/episodios/ep#{ep}_test.rb", __dir__)
         
         pdf.font("Courier", style: :bold, size: 11)
         pdf.fill_color "000066"
-        pdf.text "[SECTOR EP#{ep}] - ANÁLISIS DE INCIDENTE", size: 11
+        pdf.text "[SECTOR EP#{ep}] - RESUMEN EJECUTIVO DEL INCIDENTE", size: 11
+        pdf.move_down 5
         
         pdf.font("Courier", style: :normal, size: 9)
         pdf.fill_color "000000"
         
         if File.exist?(prompt_path)
-          title_line = File.readlines(prompt_path).first(10).find { |l| l.start_with?('# ') }
-          title = title_line ? title_line.gsub('#', '').strip : 'DESCONOCIDO'
-          pdf.text "> Firma de Amenaza: #{title}"
+          content = File.read(prompt_path)
+          title = content.match(/# (.*)/)&.captures&.first || "DESCONOCIDO"
+          enemy = content.match(/\*\*Digimon Enemigo:\*\*\s*(.*)/)&.captures&.first || "N/A"
+          vector = content.match(/\*\*Vector de Ataque \(Analogía\):\*\*\s*(.*)/)&.captures&.first || "N/A"
+          desc = content.match(/\*\*Descripción del Escenario:\*\*\s*(.*)/)&.captures&.first || "N/A"
+          ally = content.match(/\*\*Herramienta de Defensa.*:\*\*\s*(.*)/)&.captures&.first || "N/A"
+          mitigation = content.match(/\*\*Acción Tomada:\*\*\s*(.*)/)&.captures&.first || "N/A"
+          
+          p1 = "El incidente '#{title}' fue catalogado bajo el vector de ataque #{vector}, liderado por la entidad maliciosa #{enemy}. El escaneo inicial reporta: #{desc}"
+          p2 = "Las defensas se activaron utilizando los protocolos de #{ally}. La respuesta del equipo SOC consistió en: #{mitigation}"
+          p3 = File.exist?(test_path) ? "Estado actual: El motor de mitigación (Test Unitario) se encuentra ACTIVO e implementado en el sistema, asegurando la contención de futuras brechas similares." : "Estado actual: VULNERABILIDAD CRÍTICA. No se ha detectado motor de mitigación (Test faltante), dejando el sector expuesto."
+          
+          pdf.text p1, align: :justify
+          pdf.move_down 5
+          pdf.text p2, align: :justify
+          pdf.move_down 5
+          
+          if File.exist?(test_path)
+            pdf.fill_color "006600"
+          else
+            pdf.fill_color "990000"
+            missing_tests += 1
+          end
+          pdf.text p3, align: :justify
+          pdf.fill_color "000000"
         else
           pdf.fill_color "990000"
-          pdf.text "> Firma de Amenaza: DATOS CORRUPTOS (Falta Prompt)"
+          pdf.text "VULNERABILIDAD MASIVA: No existe documentación (Prompt faltante) para este sector. Inteligencia de amenazas desconocida."
           pdf.fill_color "000000"
           missing_prompts += 1
+          if !File.exist?(test_path)
+            missing_tests += 1
+          end
         end
-        
-        if File.exist?(test_path)
-          test_content = File.read(test_path)
-          test_lines = test_content.lines.count
-          classes = test_content.scan(/class\s+(\w+)/).flatten.join(", ")
-          classes = "Ninguna" if classes.empty?
-          
-          pdf.fill_color "006600"
-          pdf.text "> Motor de Mitigación: ACTIVO"
-          pdf.fill_color "000000"
-          pdf.text "  - Archivo: #{File.basename(test_path)}"
-          pdf.text "  - LOC (Líneas de Código): #{test_lines}"
-          pdf.text "  - Clases Detectadas: #{classes}"
-        else
-          pdf.fill_color "990000"
-          pdf.text "> Motor de Mitigación: VULNERABLE (Falta Test)"
-          pdf.fill_color "000000"
-          missing_tests += 1
-        end
-        
-        pdf.move_down 10
+        pdf.move_down 15
       end
       
       pdf.start_new_page
